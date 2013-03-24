@@ -1,0 +1,76 @@
+plugin.tx_enyojs {
+    appLocation = {$plugin.tx_enyojs.appLocation}
+    debugHeader = COA
+    debugHeader {
+        10 = TEXT
+        10 {
+            value < plugin.tx_enyojs.appLocation
+            wrap = <script src="|enyo/enyo.js" ></script>
+        }
+        20 = TEXT
+        20.value = <script src="index.php?eID=enyojs&extensionName=Enyojs&pluginName=Enyojs_Ajax&tx_enyojs_enyojs_ajax[format]=js"></script>
+        30 < .10
+        30.wrap = <script src="|source/package.js" ></script>
+    }
+    debugBody = TEXT
+    debugBody.value (
+        <script>
+            new App().renderInto(document.body);
+        </script>
+    )
+    deployHeader = COA
+    deployHeader {
+        10 = TEXT
+        10 {
+            value < plugin.tx_enyojs.appLocation
+            wrap = <link rel="stylesheet" href="|build/enyo.css" ></link>
+        }
+        20 < .10
+        20.wrap = <link rel="stylesheet" href="|build/app.css" ></link>
+        30 < .10
+        30.wrap = <script src="|build/enyo.js"></script>
+        40 < .10
+        40.wrap = <script src="|build/app.js"></script>
+        50 = TEXT
+        50.value = <script src="index.php?eID=enyojs&extensionName=Enyojs&pluginName=Enyojs_Ajax&tx_enyojs_enyojs_ajax[format]=js"></script>
+    }
+    deployBody = TEXT
+    deployBody.value (
+        <script>
+            if (!window.App) {
+                alert('No application build found, redirecting to debug version.');
+                location.search += (location.search.length ? '&' : '?') + 'debug=1';
+            }
+            new App().renderInto(document.body);
+        </script>
+    )
+    page = PAGE
+    page {
+        config {
+            docType = html5
+            removeDefaultJS = 1
+            removeDefaultCSS = 1
+        }
+        headerData {
+            5 = TEXT
+            5.value (
+                <meta http-equiv="Content-Type" content="text/html; charset=utf8">
+                <meta name="apple-mobile-web-app-capable" content="yes">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+            )
+            10 < plugin.tx_enyojs.deployHeader
+        }
+        10 < plugin.tx_enyojs.deployBody
+    }
+}
+
+[globalVar = GP:debug > 0]
+plugin.tx_enyojs {
+    page {
+        headerData.10 >
+        headerData.10 < plugin.tx_enyojs.debugHeader
+        10 >
+        10 < plugin.tx_enyojs.debugBody
+    }
+}
+[global]
