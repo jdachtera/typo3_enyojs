@@ -1,5 +1,8 @@
 plugin.tx_enyojs {
     appLocation = {$plugin.tx_enyojs.appLocation}
+    appArguments = COA
+    appArguments.10 = USER
+    appArguments.10.userFunc = Dachtera\Enyojs\TypoScriptFunctions->_GETJson
     debugHeader = COA
     debugHeader {
         10 = TEXT
@@ -12,10 +15,10 @@ plugin.tx_enyojs {
         30 < .10
         30.wrap = <script src="|source/package.js" ></script>
     }
-    debugBody = TEXT
-    debugBody.value (
+    debugBody < .appArguments
+    debugBody.wrap (
         <script>
-            new App().renderInto(document.body);
+            new App({_GET: |}).renderInto(document.body);
         </script>
     )
     deployHeader = COA
@@ -34,14 +37,14 @@ plugin.tx_enyojs {
         50 = TEXT
         50.value = <script src="index.php?eID=enyojs&extensionName=Enyojs&pluginName=Enyojs_Ajax&tx_enyojs_enyojs_ajax[format]=js"></script>
     }
-    deployBody = TEXT
-    deployBody.value (
+    deployBody < .appArguments
+    deployBody.wrap (
         <script>
             if (!window.App) {
                 alert('No application build found, redirecting to debug version.');
                 location.search += (location.search.length ? '&' : '?') + 'debug=1';
             }
-            new App().renderInto(document.body);
+            new App({_GET: |}).renderInto(document.body);
         </script>
     )
     page = PAGE
@@ -50,6 +53,7 @@ plugin.tx_enyojs {
             docType = html5
             removeDefaultJS = 1
             removeDefaultCSS = 1
+            no_cache = 1
         }
         headerData {
             5 = TEXT

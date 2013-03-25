@@ -76,19 +76,12 @@ class ExtensionUtility {
     }
 
     /**
-     * Returns the GET vars as a json string
-     * @return string The json string
-     */
-    public static function GETJson() {
-        return json_encode(GeneralUtility::_GET());
-    }
-
-    /**
      * @param $key
      * @return string
      * @throws \ErrorException
      */
     public static function run($extensionName, $pluginName) {
+        global $TYPO3_CONF_VARS;
         if (is_array(self::$configuration[$extensionName . '_' . $pluginName])) {
             $GLOBALS['TSFE'] = GeneralUtility::makeInstance('tslib_fe', $TYPO3_CONF_VARS, 0, '0', 1, '', '','','');
             $GLOBALS['TSFE']->sys_page = GeneralUtility::makeInstance('t3lib_pageSelect');

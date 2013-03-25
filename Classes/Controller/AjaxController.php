@@ -3,6 +3,7 @@ namespace Dachtera\Enyojs\Controller;
 
 use Dachtera\Enyojs\ExtensionUtility;
 use TYPO3\CMS\Core\Page\PageRenderer;
+use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 use TYPO3\CMS\Frontend\Page\PageGenerator;
 use TYPO3\CMS\Frontend\Page\PageRepository;
 
@@ -42,12 +43,9 @@ class AjaxController extends \TYPO3\CMS\Extbase\Mvc\Controller\ActionController 
      * @return string
      */
     public function renderPageAction($pageUid = 1) {
-        $cObj = new \TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer();
-        $cObj->start($this->pageRepository->getPage($pageUid), 'pages');
-
-        $pageContent = $cObj->cObjGet($this->getPageTemplate($pageUid));
-
-        return $pageContent;
+        $page = $this->pageRepository->getPage($pageUid);
+        $page['content'] = $this->pageRepository->getRecordsByField('tt_content', 'pid', $pageUid);
+        return json_encode($page);
     }
 
     /**
