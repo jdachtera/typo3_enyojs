@@ -3,23 +3,18 @@ if (!defined ('TYPO3_MODE')) {
     die ('Access denied.');
 }
 
-\TYPO3\CMS\Extbase\Utility\ExtensionUtility::configurePlugin(
+\Dachtera\Enyojs\Utility\ExtensionUtility::configurePlugin(
     'Dachtera.' . $_EXTKEY,
     'Enyojs_Ajax',
     array(
-        'Ajax' => 'javascript,pageTree,renderPage',
+        'Link' => 'generate,parse',
     ),
     array(
-        'Ajax' => 'javascript,pageTree,renderPage',
+        'Link' => '',
     )
 );
 
-\Dachtera\Enyojs\ExtensionUtility::configurePlugin(array(
-    'vendorName'    => 'Dachtera',
-    'extensionName' => 'Enyojs',
-    'pluginName'    => 'Enyojs_Ajax',
-    'controllers'   => array('Ajax')
-));
+$TYPO3_CONF_VARS['SC_OPTIONS']['t3lib/class.t3lib_tcemain.php']['clearCachePostProc']['enyojs'] = 'Dachtera\Enyojs\Utility\TypoScriptUtility->clearControllerJsCache';
 
 $TYPO3_CONF_VARS['FE']['eID_include']['enyojs'] = 'EXT:enyojs/eID.php';
 ?>

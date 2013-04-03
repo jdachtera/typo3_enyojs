@@ -1,18 +1,16 @@
 plugin.tx_enyojs {
     appLocation = {$plugin.tx_enyojs.appLocation}
     appArguments = COA
-    appArguments.10 = USER
-    appArguments.10.userFunc = Dachtera\Enyojs\TypoScriptFunctions->_GETJson
+    appArguments.10 = USER_INT
+    appArguments.10.userFunc = Dachtera\Enyojs\Utility\TypoScriptUtility->_GETJson
     debugHeader = COA
     debugHeader {
-        10 = TEXT
-        10 {
+        20 = TEXT
+        20 {
             value < plugin.tx_enyojs.appLocation
             wrap = <script src="|enyo/enyo.js" ></script>
         }
-        20 = TEXT
-        20.value = <script src="index.php?eID=enyojs&extensionName=Enyojs&pluginName=Enyojs_Ajax&tx_enyojs_enyojs_ajax[format]=js"></script>
-        30 < .10
+        30 < .20
         30.wrap = <script src="|source/package.js" ></script>
     }
     debugBody < .appArguments
@@ -34,26 +32,23 @@ plugin.tx_enyojs {
         30.wrap = <script src="|build/enyo.js"></script>
         40 < .10
         40.wrap = <script src="|build/app.js"></script>
-        50 = TEXT
-        50.value = <script src="index.php?eID=enyojs&extensionName=Enyojs&pluginName=Enyojs_Ajax&tx_enyojs_enyojs_ajax[format]=js"></script>
     }
     deployBody < .appArguments
     deployBody.wrap (
         <script>
             if (!window.App) {
                 alert('No application build found, redirecting to debug version.');
-                location.search += (location.search.length ? '&' : '?') + 'debug=1';
+                location.search += (location.search.length ? '&' : '?') + 'no_cache=1';
             }
             new App({_GET: |}).renderInto(document.body);
         </script>
     )
-    page = PAGE
-    page {
+    app = PAGE
+    app {
         config {
             docType = html5
             removeDefaultJS = 1
-            removeDefaultCSS = 1
-            no_cache = 1
+            #removeDefaultCSS = 1
         }
         headerData {
             5 = TEXT
@@ -63,18 +58,34 @@ plugin.tx_enyojs {
                 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
             )
             10 < plugin.tx_enyojs.deployHeader
+            10.if {
+                value.data = TSFE:no_cache
+                isGreaterThan = 0
+            }
+            20 < plugin.tx_enyojs.debugHeader
+            20.if {
+                value.data = TSFE:no_cache
+                isGreaterThan = 0
+                negate = 1
+            }
         }
         10 < plugin.tx_enyojs.deployBody
+        10.if < .headerData.10.if
+        20 = COA
+        20 {
+            10 < plugin.tx_enyojs.debugBody
+            20 = USER_INT
+            20.userFunc = Dachtera\Enyojs\Utility\TypoScriptUtility->buildControllerJsCache
+        }
+        20.if < .headerData.20.if
+    }
+    ajax = PAGE
+    ajax {
+        config {
+            disableAllHeaderCode = 1
+            disablePrefixComment = 1
+        }
+        typeNum = 2
+        10 < styles.content.get
     }
 }
-
-[globalVar = GP:debug > 0]
-plugin.tx_enyojs {
-    page {
-        headerData.10 >
-        headerData.10 < plugin.tx_enyojs.debugHeader
-        10 >
-        10 < plugin.tx_enyojs.debugBody
-    }
-}
-[global]
