@@ -65,10 +65,8 @@ class ExtensionUtility {
             $id = GeneralUtility::_GP('id');
             $TSFE = new TypoScriptFrontendController($TYPO3_CONF_VARS, $id, GeneralUtility::_GP('type'));
             $TSFE->initFEuser();
+            $TSFE->checkAlternativeIdMethods();
             $TSFE->determineId();
-            $TSFE->getPageAndRootline();
-            $TSFE->initTemplate();
-            $TSFE->getConfigArray();
 
             $bootstrap = new \TYPO3\CMS\Extbase\Core\Bootstrap();
             $configuration = GeneralUtility::array_merge_recursive_overrule(
@@ -81,6 +79,14 @@ class ExtensionUtility {
             throw new \ErrorException();
         }
 
+    }
+
+    public static function initExtended() {
+        global $TSFE;
+        $TSFE->getCompressedTCarray();
+        $TSFE->getPageAndRootline();
+        $TSFE->initTemplate();
+        $TSFE->getConfigArray();
     }
 
     /**

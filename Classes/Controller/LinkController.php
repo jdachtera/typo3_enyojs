@@ -5,7 +5,7 @@ use Dachtera\Enyojs\Utility\ExtensionUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Utility\DebuggerUtility;
 use \TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
-use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
+
 
 
 class LinkController extends ActionController {
@@ -27,8 +27,10 @@ class LinkController extends ActionController {
      * @return array
      */
     public function parseAction($url = '') {
-        // TODO: Some real_url decoding action
-        return json_encode(array());
+        return json_encode(array(
+
+        ));
     }
+
 }
 ?>

@@ -1,8 +1,9 @@
 enyo.kind({
     name: 'Dachtera.Enyojs.Request',
     kind: 'enyo.Ajax',
+    cacheBust: false,
     defaultParams: {
-
+        format: 'json'
     },
     statics: {
         serializeObject: function(obj, prefix) {

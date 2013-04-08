@@ -22,8 +22,7 @@ enyo.kind({
             classes: 'nice-padding',
             components: [
                 {
-                    name: 'content',
-                    allowHtml: true
+                    name: 'content'
                 }
             ],
             fit: true
@@ -31,7 +30,6 @@ enyo.kind({
     ],
     urlChanged: function() {
         this.bubble('onUrlChanged');
-
         var url = this.generateAjaxUrl(this.url);
         if (this.ctor.cache[url]) {
             this.changeContent(this, this.ctor.cache[url]);
@@ -50,6 +48,11 @@ enyo.kind({
                 .go();
         }
     },
+    parseResponse: function(response) {
+        var parsed = enyo.json.parse(response);
+
+        return parsed;
+    },
     generateAjaxUrl: function(url) {
         var link = document.createElement('a');
         link.href = url;
@@ -60,14 +63,12 @@ enyo.kind({
         this.ctor.cache[inSender.url] = inResponse;
     },
     changeContent: function(inSender, inResponse) {
-        this.$.content.setContent(inResponse);
-        this.applyLinkListeners();
-    },
-    applyLinkListeners: function() {
-        var links = this.$.content.hasNode().getElementsByTagName('a');
-        enyo.forEach(links, function(link) {
-            link.addEventListener('click', enyo.bind(this, 'linkClickHandler', link));
-        }, this);
+        var parsed = this.parseResponse(inResponse);
+        //this.bubble('onChangeState', {state: parsed.state});
+        this.$.content.destroyClientControls();
+        this.$.content.createClientComponents(parsed.content);
+        this.$.content.render();
+        //this.applyLinkListeners();
     },
     preload: function() {
         var links = this.$.content.hasNode().getElementsByTagName('a');
@@ -84,12 +85,12 @@ enyo.kind({
             }, this);
         }
     },
-    linkClickHandler: function(inSender, inEvent) {
+    linkTap: function(inSender, inEvent) {
         inEvent.preventDefault();
-        if (this.isInternalLink(inEvent.target)) {
-            this.setUrl(inSender.href);
+        if (this.isInternalLink(inSender.hasNode())) {
+            this.setUrl(inSender.attributes.href);
         } else {
-            //window.open(inSender.href);
+            //window.open(inSender.attributes.href);
         }
         return false;
     },

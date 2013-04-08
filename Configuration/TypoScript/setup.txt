@@ -13,12 +13,14 @@ plugin.tx_enyojs {
         30 < .20
         30.wrap = <script src="|source/package.js" ></script>
     }
-    debugBody < .appArguments
-    debugBody.wrap (
-        <script>
-            new App({_GET: |}).renderInto(document.body);
-        </script>
-    )
+    debugBody = COA
+    debugBody {
+        10 < .appArguments
+        10.wrap = <script>new App({state:{_GET: |
+        20 = TEXT
+        20.value =, url: {getIndpEnv:TYPO3_REQUEST_URL}, title: {page:title}}).renderInto(document.body);</script>
+        20.insertData = 1
+    }
     deployHeader = COA
     deployHeader {
         10 = TEXT
@@ -33,16 +35,27 @@ plugin.tx_enyojs {
         40 < .10
         40.wrap = <script src="|build/app.js"></script>
     }
-    deployBody < .appArguments
-    deployBody.wrap (
-        <script>
+    deployBody = COA
+    deployBody {
+        5 = TEXT
+        5.value = <script>
+        10 = TEXT
+        10.value (
             if (!window.App) {
                 alert('No application build found, redirecting to debug version.');
                 location.search += (location.search.length ? '&' : '?') + 'no_cache=1';
             }
-            new App({_GET: |}).renderInto(document.body);
-        </script>
-    )
+        )
+        20 < plugin.tx_enyojs.appArguments
+        20.wrap = new App({state: {_GET: |
+        30 = TEXT
+        30.value = , url: '{getIndpEnv:TYPO3_REQUEST_URL}', title: '{page:title}'}}).renderInto(document.body);
+        30.insertData = 1
+        40 = TEXT
+        40.value = </script>
+    }
+    debugBody < .deployBody
+    debugBody.10 >
     app = PAGE
     app {
         config {
@@ -84,8 +97,12 @@ plugin.tx_enyojs {
         config {
             disableAllHeaderCode = 1
             disablePrefixComment = 1
+            linkVars = no_cache
         }
         typeNum = 2
-        10 < styles.content.get
+        10 = USER
+        10.userFunc = Dachtera\Enyojs\Utility\TypoScriptUtility->getPageContent
+
+
     }
 }
