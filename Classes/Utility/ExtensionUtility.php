@@ -46,6 +46,7 @@ class ExtensionUtility {
         }
         $extensionName = str_replace(' ', '', ucwords(str_replace('_', ' ', $extensionName)));
 
+
         self::$configuration[$extensionName . '_' . $pluginName] = array(
             'vendorName'     => $vendorName,
             'extensionName'  => $extensionName,
@@ -64,9 +65,12 @@ class ExtensionUtility {
         if (is_array(self::$configuration[$extensionName . '_' . $pluginName])) {
             $id = GeneralUtility::_GP('id');
             $TSFE = new TypoScriptFrontendController($TYPO3_CONF_VARS, $id, GeneralUtility::_GP('type'));
+			$TSFE->connectToDB();
             $TSFE->initFEuser();
             $TSFE->checkAlternativeIdMethods();
             $TSFE->determineId();
+
+			self::initExtended();
 
             $bootstrap = new \TYPO3\CMS\Extbase\Core\Bootstrap();
             $configuration = GeneralUtility::array_merge_recursive_overrule(
